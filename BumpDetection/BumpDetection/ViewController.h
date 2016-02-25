@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "kMeansCluster.h"
 #import "Accelerometer.h"
+#import "Gyroscope.h"
 
 @interface ViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UILabel *xAcceleration;
@@ -20,6 +21,7 @@
 
 @property (strong, nonatomic) kMeansCluster *kMeans;
 @property (strong, nonatomic) Accelerometer *accelerometer;
+@property (strong, nonatomic) Gyroscope *gyroscope;
 
 @end
 

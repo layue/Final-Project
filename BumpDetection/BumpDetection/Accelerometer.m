@@ -23,7 +23,7 @@
                                                  yAcc = accelerometerData.acceleration.y;
                                                  zAcc = accelerometerData.acceleration.z;
                                                  
-                                                 NSLog(@"%f %f %f", xAcc, yAcc, zAcc);
+//                                                 NSLog(@"%f %f %f", xAcc, yAcc, zAcc);
                                                  
                                                  if(error) { NSLog(@"%@", error); }
     }];
