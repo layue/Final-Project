@@ -22,7 +22,7 @@
                                         yGyro = gyroData.rotationRate.y;
                                         zGyro = gyroData.rotationRate.z;
                                         
-                                        NSLog(@"%f %f %f", xGyro, yGyro, zGyro);
+//                                        NSLog(@"%f %f %f", xGyro, yGyro, zGyro);
                                         
                                         if (error) { NSLog(@"%@", error);}
     }];

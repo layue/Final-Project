@@ -20,6 +20,7 @@
     self.kMeans = [[kMeansCluster alloc] init];
     self.accelerometer = [[Accelerometer alloc] init];
     self.gyroscope = [[Gyroscope alloc] init];
+    self.dbManager = [[DBManager alloc] init];
     
 //    move window average
 //    NSArray *rawData = @[@1,@2,@5,@8,@6,@4,@7,@3];
@@ -32,15 +33,15 @@
     // Dispose of any resources that can be recreated.
 }
 - (IBAction)startCaptureData:(id)sender {
-    NSMutableArray *accData = [[NSMutableArray alloc] init];
-    accData = [self.accelerometer accelerationData];
+//    NSMutableArray *accData = [[NSMutableArray alloc] init];
+    [self.accelerometer accelerationData];
     
     NSMutableArray *gyroData = [[NSMutableArray alloc] init];
     gyroData = [self.gyroscope gyroscopeData];
 
-    self.xAcceleration.text = [accData[0] stringValue];
-    self.yAcceleration.text = [accData[1] stringValue];
-    self.zAcceletation.text = [accData[2] stringValue];
+//    self.xAcceleration.text = [accData[0] stringValue];
+//    self.yAcceleration.text = [accData[1] stringValue];
+//    self.zAcceletation.text = [accData[2] stringValue];
     
     self.xRotation.text = [gyroData[0] stringValue];
     self.yRotation.text = [gyroData[1] stringValue];

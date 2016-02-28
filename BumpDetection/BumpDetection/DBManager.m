@@ -39,7 +39,7 @@ static sqlite3_stmt *statement = nil;
         if (sqlite3_open(dbpath, &db) == SQLITE_OK)
         {
             char *errMsg;
-            const char *sql_stmt = "create table if not exists studentsDetail (time text, ax integer, ay interger, az integer)";
+            const char *sql_stmt = "create table if not exists vehicleAccelerometer (time text, ax float, ay float, az float)";
             if (sqlite3_exec(db, sql_stmt, NULL, NULL, &errMsg)
                 != SQLITE_OK)
             {
@@ -57,23 +57,32 @@ static sqlite3_stmt *statement = nil;
     return isSuccess;
 }
 
-- (BOOL) saveData:(NSString *) time aX:(NSString *)ax
-       aY:(NSString *)ay aZ:(NSString *)az;
+- (BOOL) saveData:(NSMutableArray *) buffer
 {
     const char *dbpath = [dbPath UTF8String];
+    
     if (sqlite3_open(dbpath, &db) == SQLITE_OK)
     {
-        NSString *insertSQL = [NSString stringWithFormat:@"insert into vehicleAccelerometer (time, ax, ay, az) values (\"%@\",\"%@\", \"%@\", \"%@\")", time, ax, ay, az];
+        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into vehicleAccelerometer (time, ax, ay, az) values ('add', 1.0, 2.0, 3.0);"];
+//        (\"%@\",\"%@\", \"%@\", \"%@\")", time, ax, ay, az];
+        
+        for (id obj in buffer) {
+            NSString *value = [NSString stringWithFormat:@"(\'%@\', %f, %f, %f), ", obj[0], [obj[1] doubleValue], [obj[2] doubleValue], [obj[3] doubleValue]];
+            [insertSQL appendString:value];
+        }
+        [insertSQL replaceCharactersInRange:NSMakeRange([insertSQL length] - 2, 2) withString:@";"];
+        
         const char *insert_stmt = [insertSQL UTF8String];
         sqlite3_prepare_v2(db, insert_stmt,-1, &statement, NULL);
-        if (sqlite3_step(statement) == SQLITE_DONE)
-        {
+
+        int state = sqlite3_step(statement);
+        if (state == SQLITE_DONE) {
             return YES;
         }
         else {
             return NO;
         }
-        sqlite3_reset(statement);
+//        sqlite3_reset(statement);
     }
     return NO;
 }

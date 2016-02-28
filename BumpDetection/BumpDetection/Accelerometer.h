@@ -8,15 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
+#import "DBManager.h"
 
 @interface Accelerometer : NSObject
-{
-    double xAcc;
-    double yAcc;
-    double zAcc;
-}
 
 @property (strong, nonatomic) CMMotionManager *motionManager;
-- (NSMutableArray *) accelerationData;
+@property (strong, nonatomic) DBManager * dbManager;
+
+- (void) accelerationData;
 
 @end

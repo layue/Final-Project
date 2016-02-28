@@ -16,7 +16,6 @@
 
 + (DBManager *) getSharedInstance;
 - (BOOL) createDB;
-- (BOOL) saveData:(NSString *) time aX:(NSString *)ax
- aY:(NSString *)ay aZ:(NSString *)az;
+- (BOOL) saveData:(NSMutableArray *) buffer;
 
 @end
