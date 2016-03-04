@@ -38,14 +38,11 @@
     
     NSMutableArray *gyroData = [[NSMutableArray alloc] init];
     gyroData = [self.gyroscope gyroscopeData];
-
-//    self.xAcceleration.text = [accData[0] stringValue];
-//    self.yAcceleration.text = [accData[1] stringValue];
-//    self.zAcceletation.text = [accData[2] stringValue];
-    
-    self.xRotation.text = [gyroData[0] stringValue];
-    self.yRotation.text = [gyroData[1] stringValue];
-    self.zRotation.text = [gyroData[2] stringValue];
 }
+
+- (IBAction)clearDB:(id)sender {
+    
+}
+
 
 @end
