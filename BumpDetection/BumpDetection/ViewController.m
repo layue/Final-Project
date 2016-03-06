@@ -20,11 +20,8 @@
     self.kMeans = [[kMeansCluster alloc] init];
     self.accelerometer = [[Accelerometer alloc] init];
     self.gyroscope = [[Gyroscope alloc] init];
-    self.dbManager = [[DBManager alloc] init];
     
 //    move window average
-//    NSArray *rawData = @[@1,@2,@5,@8,@6,@4,@7,@3];
-//    NSMutableArray *result = [self.kMeans getCentralValue:rawData];
 
 }
 
@@ -40,7 +37,27 @@
     gyroData = [self.gyroscope gyroscopeData];
 }
 
+- (IBAction)stopCaptureData:(id)sender {
+    [self.accelerometer stopAccelerometer];
+    [self showAlertMessage:@"Stop to capture Accelerometer data."];
+}
+
+
 - (IBAction)clearDB:(id)sender {
+    [[DBManager getSharedInstance] deleteDB];
+}
+
+- (IBAction)addBump:(id)sender {
+    [self.accelerometer addBump];
+}
+
+- (void) showAlertMessage:(NSString *)myMessage {
+    UIAlertController *alertController;
+    alertController = [UIAlertController alertControllerWithTitle:@"Alert message" message:myMessage preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Okey" style:UIAlertActionStyleDefault handler:nil]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
     
 }
 

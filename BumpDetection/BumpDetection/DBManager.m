@@ -28,7 +28,7 @@ static sqlite3_stmt *statement = nil;
     dirPaths = NSSearchPathForDirectoriesInDomains
     (NSDocumentDirectory, NSUserDomainMask, YES);
     docsDir = dirPaths[0];
-    NSLog(@"%@", docsDir);
+
     // Build the path to the database file
     dbPath = [[NSString alloc] initWithString:
                     [docsDir stringByAppendingPathComponent: @"vehicleAccelerometer.db"]];
@@ -40,8 +40,7 @@ static sqlite3_stmt *statement = nil;
         if (sqlite3_open(dbpath, &db) == SQLITE_OK)
         {
             char *errMsg;
-//            const char *sql_stmt = "create table if not exists vehicleAccelerometer (time text, ax float, ay float, az float)";
-            const char *sql_stmt = "delete table vehicleAccelerometer;";
+            const char *sql_stmt = "create table if not exists vehicleAccelerometer (time text, ax float, ay float, az float, status text)";
             if (sqlite3_exec(db, sql_stmt, NULL, NULL, &errMsg)
                 != SQLITE_OK)
             {
@@ -60,10 +59,45 @@ static sqlite3_stmt *statement = nil;
 }
 
 - (BOOL) deleteDB {
+    NSString *docsDir;
+    NSArray *dirPaths;
+    // Get the documents directory
+    dirPaths = NSSearchPathForDirectoriesInDomains
+    (NSDocumentDirectory, NSUserDomainMask, YES);
+    docsDir = dirPaths[0];
+    
+    // Build the path to the database file
+    dbPath = [[NSString alloc] initWithString:
+              [docsDir stringByAppendingPathComponent: @"vehicleAccelerometer.db"]];
     BOOL isSuccess = YES;
-    
-    
-    return isSuccess;
+    NSFileManager *filemgr = [NSFileManager defaultManager];
+    if ([filemgr fileExistsAtPath: dbPath] == YES)
+    {
+        const char *dbpath = [dbPath UTF8String];
+        if (sqlite3_open(dbpath, &db) == SQLITE_OK)
+        {
+            char *errMsg;
+            const char *sql_stmt = "delete from vehicleAccelerometer;";
+            
+            if (sqlite3_exec(db, sql_stmt, NULL, NULL, &errMsg)
+                != SQLITE_OK)
+            {
+                NSLog(@"Failed to delete table");
+                isSuccess = NO;
+            }
+            sqlite3_close(db);
+            return isSuccess;
+        }
+        else {
+            NSLog(@"Failed to open database");
+            isSuccess = NO;
+            return isSuccess;
+        }
+    } else {
+        NSLog(@"Failed to delete nonexisting database");
+        isSuccess = NO;
+        return isSuccess;
+    }
 }
 
 - (BOOL) saveData:(NSMutableArray *) buffer
@@ -72,11 +106,11 @@ static sqlite3_stmt *statement = nil;
     
     if (sqlite3_open(dbpath, &db) == SQLITE_OK)
     {
-        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into vehicleAccelerometer (time, ax, ay, az) values "];
+        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into vehicleAccelerometer (time, ax, ay, az, status) values "];
 //        (\"%@\",\"%@\", \"%@\", \"%@\")", time, ax, ay, az];
         
         for (id obj in buffer) {
-            NSString *value = [NSString stringWithFormat:@"(\'%@\', %f, %f, %f), ", obj[0], [obj[1] doubleValue], [obj[2] doubleValue], [obj[3] doubleValue]];
+            NSString *value = [NSString stringWithFormat:@"(\'%@\', %f, %f, %f, \'%@\'), ", obj[0], [obj[1] doubleValue], [obj[2] doubleValue], [obj[3] doubleValue], obj[4]];
             [insertSQL appendString:value];
         }
         [insertSQL replaceCharactersInRange:NSMakeRange([insertSQL length] - 2, 2) withString:@";"];

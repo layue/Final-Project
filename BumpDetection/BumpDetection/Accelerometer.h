@@ -13,8 +13,10 @@
 @interface Accelerometer : NSObject
 
 @property (strong, nonatomic) CMMotionManager *motionManager;
-@property (strong, nonatomic) DBManager * dbManager;
+@property (strong, nonatomic) NSMutableArray *bumpSmoothRecord;
 
 - (void) accelerationData;
+- (void) stopAccelerometer;
+- (void) addBump;
 
 @end
