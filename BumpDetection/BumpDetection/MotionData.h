@@ -1,8 +1,8 @@
 //
-//  Accelerometer.h
+//  MotionData.h
 //  BumpDetection
 //
-//  Created by 徐冰 on 24/02/2016.
+//  Created by 徐冰 on 13/03/2016.
 //  Copyright © 2016 Bing. All rights reserved.
 //
 
@@ -10,13 +10,13 @@
 #import <CoreMotion/CoreMotion.h>
 #import "DBManager.h"
 
-@interface Accelerometer : NSObject
+@interface MotionData : NSObject
 
-@property (strong, nonatomic) CMMotionManager *motionManager;
+@property CMMotionManager *motionManager;
 @property (strong, nonatomic) NSMutableArray *bumpSmoothRecord;
 
-- (void) accelerationData;
-- (void) stopAccelerometer;
+- (BOOL) startCaptureData;
 - (void) addBump;
+- (void) stopCaptureData;
 
 @end

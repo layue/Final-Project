@@ -8,15 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "kMeansCluster.h"
-#import "Accelerometer.h"
-#import "Gyroscope.h"
 #import "DBManager.h"
+#import "MotionData.h"
 
 @interface ViewController : UIViewController
 
 @property (strong, nonatomic) kMeansCluster *kMeans;
-@property (strong, nonatomic) Accelerometer *accelerometer;
-@property (strong, nonatomic) Gyroscope *gyroscope;
+@property (strong, nonatomic) MotionData *motionData;
 
 @end
 

@@ -16,7 +16,7 @@
 
 + (DBManager *) getSharedInstance;
 - (BOOL) createDB;
-- (BOOL) deleteDB;
+- (BOOL) clearDB;
 - (BOOL) saveData:(NSMutableArray *) buffer;
 
 @end

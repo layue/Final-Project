@@ -18,8 +18,6 @@
     [super viewDidLoad];
 
     self.kMeans = [[kMeansCluster alloc] init];
-    self.accelerometer = [[Accelerometer alloc] init];
-    self.gyroscope = [[Gyroscope alloc] init];
     
 //    move window average
 
@@ -30,25 +28,27 @@
     // Dispose of any resources that can be recreated.
 }
 - (IBAction)startCaptureData:(id)sender {
-//    NSMutableArray *accData = [[NSMutableArray alloc] init];
-    [self.accelerometer accelerationData];
-    
-    NSMutableArray *gyroData = [[NSMutableArray alloc] init];
-    gyroData = [self.gyroscope gyroscopeData];
+    self.motionData = [[MotionData alloc] init];
+    if (![self.motionData startCaptureData]) {
+        [self showAlertMessage:@"Failed to start capture motion data."];
+    }
 }
 
 - (IBAction)stopCaptureData:(id)sender {
-    [self.accelerometer stopAccelerometer];
+    [self.motionData stopCaptureData];
     [self showAlertMessage:@"Stop to capture Accelerometer data."];
 }
 
-
 - (IBAction)clearDB:(id)sender {
-    [[DBManager getSharedInstance] deleteDB];
+    if([[DBManager getSharedInstance] clearDB]) {
+        [self showAlertMessage:@"You have cleared all Accelerometer data."];
+    } else {
+        [self showAlertMessage:@"Failed to clear Accelerometer data."];
+    }
 }
 
 - (IBAction)addBump:(id)sender {
-    [self.accelerometer addBump];
+    [self.motionData addBump];
 }
 
 - (void) showAlertMessage:(NSString *)myMessage {
@@ -60,6 +60,5 @@
     [self presentViewController:alertController animated:YES completion:nil];
     
 }
-
 
 @end

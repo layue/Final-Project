@@ -58,7 +58,7 @@ static sqlite3_stmt *statement = nil;
     return isSuccess;
 }
 
-- (BOOL) deleteDB {
+- (BOOL) clearDB {
     NSString *docsDir;
     NSArray *dirPaths;
     // Get the documents directory
