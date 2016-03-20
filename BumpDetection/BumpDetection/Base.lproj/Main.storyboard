@@ -61,6 +61,13 @@
                                     <action selector="clearDB:" destination="BYZ-38-t0r" eventType="touchUpInside" id="PNa-Wa-CMB"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JLj-lX-dnk">
+                                <rect key="frame" x="162" y="556" width="50" height="30"/>
+                                <state key="normal" title="Map"/>
+                                <connections>
+                                    <segue destination="eSj-5s-Ixg" kind="show" id="4PI-mj-TAh"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -69,6 +76,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="310.5" y="229.5"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="1p9-HO-1u4">
+            <objects>
+                <viewController id="eSj-5s-Ixg" customClass="MapViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1SO-Mv-jL8"/>
+                        <viewControllerLayoutGuide type="bottom" id="6bs-uu-4w7"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="0A0-14-8ty">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Gza-mU-MFI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="751.5" y="229.5"/>
         </scene>
     </scenes>
 </document>

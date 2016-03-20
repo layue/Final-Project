@@ -18,15 +18,13 @@
     [super viewDidLoad];
 
     self.kMeans = [[kMeansCluster alloc] init];
-    
-//    move window average
-
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 - (IBAction)startCaptureData:(id)sender {
     self.motionData = [[MotionData alloc] init];
     if (![self.motionData startCaptureData]) {

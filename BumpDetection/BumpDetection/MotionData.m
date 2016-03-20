@@ -22,21 +22,32 @@
         return isSuccess;
     }
     
-    self.motionManager.deviceMotionUpdateInterval = 1;
+    if (self.motionManager != nil) {
+        CMAttitude *initialAttitude = self.motionManager.deviceMotion.attitude;
+        NSLog(@"%@", initialAttitude);
+    }
     
-    CMDeviceMotionHandler dmHandler = ^(CMDeviceMotion *motion, NSError * error){
-        CMAcceleration acc = motion.userAcceleration;
+    [self.motionManager startDeviceMotionUpdates];
+    CMAttitude *initialAttitude = [[CMAttitude alloc] init];
+    NSLog(@"%@", self.motionManager);
+    initialAttitude = self.motionManager.deviceMotion.attitude;
+    [self.motionManager stopDeviceMotionUpdates];
+    
+    
+    CMDeviceMotionHandler dmHandler = ^(CMDeviceMotion *motion, NSError *error) {
+        [motion.attitude multiplyByInverseOfAttitude:initialAttitude];
         CMRotationMatrix rotMtx = motion.attitude.rotationMatrix;
-        
+        CMAcceleration acc = motion.userAcceleration;
+
         double x = acc.x * rotMtx.m11 + acc.y * rotMtx.m21 + acc.z * rotMtx.m31;
         double y = acc.x * rotMtx.m12 + acc.y * rotMtx.m22 + acc.z * rotMtx.m32;
         double z = acc.x * rotMtx.m12 + acc.y * rotMtx.m23 + acc.z * rotMtx.m33;
-        
+
         NSString *xAcc = [NSString stringWithFormat:@"%.2f", x];
         NSString *yAcc = [NSString stringWithFormat:@"%.2f", y];
         NSString *zAcc = [NSString stringWithFormat:@"%.2f", z];
         NSLog(@"xAcc = %@, yAcc = %@, zAcc = %@", xAcc, yAcc, zAcc);
-        
+
         if (accData.count < 50) {
             [accData addObject:@[[NSDate date], xAcc, yAcc, zAcc, [NSMutableString stringWithFormat:@"Smooth"]]];
         } else {
@@ -47,9 +58,38 @@
             }
         }
     };
-    //End of handler block
     
-    [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue:[NSOperationQueue currentQueue] withHandler:dmHandler];
+    [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:dmHandler];
+    
+//Push method
+//    self.motionManager.deviceMotionUpdateInterval = 1;
+//    
+//    CMDeviceMotionHandler dmHandler = ^(CMDeviceMotion *motion, NSError * error){
+//        CMAcceleration acc = motion.userAcceleration;
+//        CMRotationMatrix rotMtx = motion.attitude.rotationMatrix;
+//        
+//        double x = acc.x * rotMtx.m11 + acc.y * rotMtx.m21 + acc.z * rotMtx.m31;
+//        double y = acc.x * rotMtx.m12 + acc.y * rotMtx.m22 + acc.z * rotMtx.m32;
+//        double z = acc.x * rotMtx.m12 + acc.y * rotMtx.m23 + acc.z * rotMtx.m33;
+//        
+//        NSString *xAcc = [NSString stringWithFormat:@"%.2f", x];
+//        NSString *yAcc = [NSString stringWithFormat:@"%.2f", y];
+//        NSString *zAcc = [NSString stringWithFormat:@"%.2f", z];
+//        NSLog(@"xAcc = %@, yAcc = %@, zAcc = %@", xAcc, yAcc, zAcc);
+//        
+//        if (accData.count < 50) {
+//            [accData addObject:@[[NSDate date], xAcc, yAcc, zAcc, [NSMutableString stringWithFormat:@"Smooth"]]];
+//        } else {
+//            if ([self writeBufferToDB:accData]) {
+//                [accData removeAllObjects];
+//            } else {
+//                NSLog(@"Failed to write buffer to database.");
+//            }
+//        }
+//    };
+//    //End of handler block
+//    
+//    [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue:[NSOperationQueue currentQueue] withHandler:dmHandler];
     
     return isSuccess;
 }
