@@ -10,13 +10,19 @@
 #import <CoreMotion/CoreMotion.h>
 #import "DBManager.h"
 
+@protocol AddMapMarkerDelegate <NSObject>
+
+- (void) addMarker;
+
+@end
+
 @interface MotionData : NSObject
 
 @property CMMotionManager *motionManager;
 @property (strong, nonatomic) NSMutableArray *bumpSmoothRecord;
+@property (weak) id <AddMapMarkerDelegate> markerDelegate;
 
 - (BOOL) startCaptureData;
-- (void) addBump;
 - (void) stopCaptureData;
 
 @end

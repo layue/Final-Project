@@ -25,12 +25,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)startCaptureData:(id)sender {
-    self.motionData = [[MotionData alloc] init];
-    if (![self.motionData startCaptureData]) {
-        [self showAlertMessage:@"Failed to start capture motion data."];
-    }
-}
 
 - (IBAction)stopCaptureData:(id)sender {
     [self.motionData stopCaptureData];
@@ -43,10 +37,6 @@
     } else {
         [self showAlertMessage:@"Failed to clear Accelerometer data."];
     }
-}
-
-- (IBAction)addBump:(id)sender {
-    [self.motionData addBump];
 }
 
 - (void) showAlertMessage:(NSString *)myMessage {

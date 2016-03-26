@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "MotionData.h"
 
-@interface MapViewController : UIViewController <CLLocationManagerDelegate>
+@interface MapViewController : UIViewController <CLLocationManagerDelegate, AddMapMarkerDelegate>
 
 @property (strong, nonatomic) GMSMapView *mapView;
 @property (strong, nonatomic) CLLocationManager *locationManager;
