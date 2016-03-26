@@ -11,20 +11,17 @@
 
 @implementation MapViewController {
     BOOL firstLocationUpdate;
+    NSMutableArray *accData;
 }
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
-    _mapView = [[GMSMapView alloc] init];
 
     _mapView = [[GMSMapView  alloc] initWithFrame:CGRectMake(self.view.bounds.origin.x, self.view.bounds.origin.y, self.view.bounds.size.width, self.view.bounds.size.height - 40)];
     
     _mapView.myLocationEnabled = YES;
     _mapView.settings.myLocationButton = YES;
     _mapView.settings.compassButton = YES;
-    
-//    _mapView.myLocation.course
     
     [_mapView addObserver:self
                forKeyPath:@"myLocation"
@@ -35,7 +32,8 @@
     MotionData *motionData = [[MotionData alloc] init];
     motionData.markerDelegate = self;
     [motionData startCaptureData];
-
+    
+    accData = [[NSMutableArray alloc] init];
 }
 
 - (void)dealloc {
@@ -60,11 +58,11 @@
 }
 
 - (IBAction)addBumpMarker:(id)sender {
-//    [self addMarkers:(_mapView.myLocation.coordinate)];
-    NSLog(@"%@", _mapView.myLocation);
+    [self addMarkerX:0 Y:0 Z:0];
 }
 
-- (void) addMarker {
+- (void) addMarkerX:(double)x Y:(double)y Z:(double)z
+{
     GMSMarker *marker = [[GMSMarker alloc] init];
     GMSGeocoder *geocoder = [[GMSGeocoder alloc] init];
     
@@ -72,14 +70,20 @@
         GMSAddress *address = response.firstResult;
         marker.position = address.coordinate;
         marker.title = address.thoroughfare;
-        marker.snippet = [NSString stringWithFormat:@"%f", _mapView.myLocation.course];
         marker.appearAnimation = kGMSMarkerAnimationPop;
         marker.map = _mapView;
+        
+        if (accData.count < 10) {
+            [accData addObject:@[[NSDate date], [NSNumber numberWithDouble:x], [NSNumber numberWithDouble:y], [NSNumber numberWithDouble:z], [NSNumber numberWithDouble:marker.position.latitude], [NSNumber numberWithDouble:marker.position.longitude], marker.title, [NSNumber numberWithDouble:_mapView.myLocation.course]]];
+        } else {
+            if ([[DBManager getSharedInstance] saveData:accData]) {
+                [accData removeAllObjects];
+            } else {
+                NSLog(@"Failed to write buffer to database.");
+            }
+        }
     };
     [geocoder reverseGeocodeCoordinate:_mapView.myLocation.coordinate completionHandler:RGHdl];
-//change marker color
-//    marker.icon = [GMSMarker markerImageWithColor:[UIColor colorWithRed:0 green:1 blue:0 alpha:1]];
-   
 }
 
 @end

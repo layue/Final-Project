@@ -12,7 +12,7 @@
 
 @protocol AddMapMarkerDelegate <NSObject>
 
-- (void) addMarker;
+- (void) addMarkerX:(double)x Y:(double) y Z:(double) z;
 
 @end
 

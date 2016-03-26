@@ -31,7 +31,7 @@ static sqlite3_stmt *statement = nil;
 
     // Build the path to the database file
     dbPath = [[NSString alloc] initWithString:
-                    [docsDir stringByAppendingPathComponent: @"vehicleAccelerometer.db"]];
+                    [docsDir stringByAppendingPathComponent: @"BumpRecord.db"]];
     BOOL isSuccess = YES;
     NSFileManager *filemgr = [NSFileManager defaultManager];
     if ([filemgr fileExistsAtPath: dbPath ] == NO)
@@ -40,7 +40,7 @@ static sqlite3_stmt *statement = nil;
         if (sqlite3_open(dbpath, &db) == SQLITE_OK)
         {
             char *errMsg;
-            const char *sql_stmt = "create table if not exists vehicleAccelerometer (time text, ax float, ay float, az float, status text)";
+            const char *sql_stmt = "create table if not exists BumpRecord (time text, ax float, ay float, az float, latitude float, longitude float, streetName text, travelDirection float)";
             if (sqlite3_exec(db, sql_stmt, NULL, NULL, &errMsg)
                 != SQLITE_OK)
             {
@@ -68,7 +68,7 @@ static sqlite3_stmt *statement = nil;
     
     // Build the path to the database file
     dbPath = [[NSString alloc] initWithString:
-              [docsDir stringByAppendingPathComponent: @"vehicleAccelerometer.db"]];
+              [docsDir stringByAppendingPathComponent: @"BumpRecord.db"]];
     BOOL isSuccess = YES;
     NSFileManager *filemgr = [NSFileManager defaultManager];
     if ([filemgr fileExistsAtPath: dbPath] == YES)
@@ -77,7 +77,7 @@ static sqlite3_stmt *statement = nil;
         if (sqlite3_open(dbpath, &db) == SQLITE_OK)
         {
             char *errMsg;
-            const char *sql_stmt = "delete from vehicleAccelerometer;";
+            const char *sql_stmt = "delete from BumpRecord;";
             
             if (sqlite3_exec(db, sql_stmt, NULL, NULL, &errMsg)
                 != SQLITE_OK)
@@ -106,14 +106,13 @@ static sqlite3_stmt *statement = nil;
     
     if (sqlite3_open(dbpath, &db) == SQLITE_OK)
     {
-        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into vehicleAccelerometer (time, ax, ay, az, status) values "];
-//        (\"%@\",\"%@\", \"%@\", \"%@\")", time, ax, ay, az];
+        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into BumpRecord (time, ax, ay, az, latitude, longitude, streetName, travelDirection) values "];
         
         for (id obj in buffer) {
-            NSString *value = [NSString stringWithFormat:@"(\'%@\', %f, %f, %f, \'%@\'), ", obj[0], [obj[1] doubleValue], [obj[2] doubleValue], [obj[3] doubleValue], obj[4]];
+            NSString *value = [NSString stringWithFormat:@"(\'%@\', %@, %@, %@, %@, %@, \'%@\', %@), ", obj[0], obj[1], obj[2], obj[3], obj[4], obj[5], obj[6], obj[7]];
             [insertSQL appendString:value];
         }
-        [insertSQL replaceCharactersInRange:NSMakeRange([insertSQL length] - 2, 2) withString:@";"];
+        [insertSQL deleteCharactersInRange:NSMakeRange([insertSQL length] - 2, 2)];
         
         const char *insert_stmt = [insertSQL UTF8String];
         sqlite3_prepare_v2(db, insert_stmt,-1, &statement, NULL);
@@ -125,7 +124,6 @@ static sqlite3_stmt *statement = nil;
         else {
             return NO;
         }
-//        sqlite3_reset(statement);
     }
     return NO;
 }
