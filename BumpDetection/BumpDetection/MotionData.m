@@ -7,6 +7,7 @@
 //
 
 #import "MotionData.h"
+@import UIKit;
 
 @implementation MotionData
 
@@ -15,7 +16,8 @@
     
     self.motionManager = [[CMMotionManager alloc] init];
     self.bumpSmoothRecord = [[NSMutableArray alloc] init];
-//    NSMutableArray *accData = [[NSMutableArray alloc] init];
+    NSMutableArray *accData = [[NSMutableArray alloc] init];
+    [UIDevice currentDevice].batteryMonitoringEnabled = YES;
     
     if (!self.motionManager.deviceMotionAvailable) {
         isSuccess = NO;
@@ -23,7 +25,7 @@
     }
     
 //Push method
-    self.motionManager.deviceMotionUpdateInterval = 0.5;
+    self.motionManager.deviceMotionUpdateInterval = 1.0/100;
     
     CMDeviceMotionHandler dmHandler = ^(CMDeviceMotion *motion, NSError * error){
         CMAcceleration acc = motion.userAcceleration;
@@ -36,16 +38,19 @@
         if (fabs(z) >= 0.2) {
             [self.markerDelegate addMarkerX:x Y:y Z:z];
             
-//            if (accData.count < 50) {
-//                [accData addObject:@[[NSDate date], xAcc, yAcc, zAcc, [NSMutableString stringWithFormat:@"Bump"]]];
-//            } else {
-//                if ([self writeBufferToDB:accData]) {
-//                    [accData removeAllObjects];
-//                } else {
-//                    NSLog(@"Failed to write buffer to database.");
-//                }
-//            }
+            NSLog(@"There is a bump!");
+        
+            if (accData.count < 500) {
+                [accData addObject:@[[NSDate date], [NSString stringWithFormat:@"%.3f", x], [NSString stringWithFormat:@"%.3f", y], [NSString stringWithFormat:@"%.3f", z], [NSMutableString stringWithString:@""],[NSNumber numberWithFloat:[UIDevice currentDevice].batteryLevel]]];
+            } else {
+                if ([self writeBufferToDB:accData]) {
+                    [accData removeAllObjects];
+                } else {
+                    NSLog(@"Failed to write buffer to database.");
+                }
+            }
         }
+        //else ignore the event
     };
     //End of handler block
     
@@ -59,41 +64,41 @@
 }
 
 //Use this method to store original Smooth and Bumpy data to analyse. Can be delete after analyse
-//- (BOOL) writeBufferToDB:(NSMutableArray *) buffer {
-//    for (id obj in buffer){
-//        if ([self.bumpSmoothRecord count] > 0) {
-//            
-//            int FROM = 0;
-//            int TO = 1;
-//            int LABLE = 2;
-//            if ([obj[0] compare:self.bumpSmoothRecord[0][FROM]] == NSOrderedDescending) {
-//                if ([obj[0] compare:self.bumpSmoothRecord[0][TO]] == NSOrderedAscending) {
-//                    [obj[4] setString:self.bumpSmoothRecord[0][LABLE]];
-//                } else {
-//                    [self.bumpSmoothRecord removeObjectAtIndex:0];
-//                }
-//            }
-//        }
-//    } because now all records are labled as Bump, so do not need change Smooth to Bump
-//    
-//    return [[DBManager getSharedInstance] saveData:buffer];
-//}
+- (BOOL) writeBufferToDB:(NSMutableArray *) buffer {
+    for (id obj in buffer){
+        if ([self.bumpSmoothRecord count] > 0) {
+            
+            int FROM = 0;
+            int TO = 1;
+            int LABLE = 2;
+            if ([obj[0] compare:self.bumpSmoothRecord[0][FROM]] == NSOrderedDescending) {
+                if ([obj[0] compare:self.bumpSmoothRecord[0][TO]] == NSOrderedAscending) {
+                    [obj[4] setString:self.bumpSmoothRecord[0][LABLE]];
+                } else {
+                    [self.bumpSmoothRecord removeObjectAtIndex:0];
+                }
+            }
+        }
+    } //because now all records are labled as Bump, so do not need change Smooth to Bump
+    
+    return [[DBManager getSharedInstance] saveData:buffer];
+}
 
-//- (void) addBumpMarker {
-//    NSDate *from = [NSDate dateWithTimeIntervalSinceNow:-1];
-//    NSDate *to = [NSDate dateWithTimeIntervalSinceNow:1];
-//    
-//    if ([self.bumpSmoothRecord count] > 0) {
-//        NSUInteger last = [self.bumpSmoothRecord count] - 1;
-//        int TO = 1;
-//        if ([from compare:self.bumpSmoothRecord[last][TO]] == NSOrderedAscending) {
-//            [self.bumpSmoothRecord[last] replaceObjectAtIndex:TO withObject:to];
-//        } else {
-//            [self.bumpSmoothRecord addObject:[NSMutableArray arrayWithObjects:from, to, @"Bump", nil]];
-//        }
-//    } else {
-//        [self.bumpSmoothRecord addObject:[NSMutableArray arrayWithObjects:from, to, @"Bump", nil]];
-//    }
-//}
+- (void) addBump {
+    NSDate *from = [NSDate dateWithTimeIntervalSinceNow:-0.5];
+    NSDate *to = [NSDate date];
+    
+    if ([self.bumpSmoothRecord count] > 0) {
+        NSUInteger last = [self.bumpSmoothRecord count] - 1;
+        int TO = 1;
+        if ([from compare:self.bumpSmoothRecord[last][TO]] == NSOrderedAscending) {
+            [self.bumpSmoothRecord[last] replaceObjectAtIndex:TO withObject:to];
+        } else {
+            [self.bumpSmoothRecord addObject:[NSMutableArray arrayWithObjects:from, to, @"Bump", nil]];
+        }
+    } else {
+        [self.bumpSmoothRecord addObject:[NSMutableArray arrayWithObjects:from, to, @"Bump", nil]];
+    }
+}
 
 @end

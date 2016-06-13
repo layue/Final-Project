@@ -24,5 +24,5 @@
 
 - (BOOL) startCaptureData;
 - (void) stopCaptureData;
-
+- (void) addBump;
 @end

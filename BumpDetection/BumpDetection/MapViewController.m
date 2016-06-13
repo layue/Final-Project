@@ -14,6 +14,23 @@
     NSMutableArray *accData;
 }
 
+-(void) showHideNavbar:(id) sender
+{
+    // write code to show/hide nav bar here
+    // check if the Navigation Bar is shown
+    if (self.navigationController.navigationBar.hidden == NO)
+    {
+        // hide the Navigation Bar
+        [self.navigationController setNavigationBarHidden:YES animated:YES];
+    }
+    // if Navigation Bar is already hidden
+    else if (self.navigationController.navigationBar.hidden == YES)
+    {
+        // Show the Navigation Bar
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
+    }
+}
+
 - (void) viewDidLoad {
     [super viewDidLoad];
 
@@ -27,13 +44,17 @@
                forKeyPath:@"myLocation"
                   options:NSKeyValueObservingOptionNew
                   context:NULL];
-    [self.view addSubview:_mapView];
+//    [self.view addSubview:_mapView];
+    self.view = _mapView;
     
     MotionData *motionData = [[MotionData alloc] init];
     motionData.markerDelegate = self;
     [motionData startCaptureData];
     
     accData = [[NSMutableArray alloc] init];
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showHideNavbar:)];
+    [self.view addGestureRecognizer:tapGesture];
 }
 
 - (void)dealloc {

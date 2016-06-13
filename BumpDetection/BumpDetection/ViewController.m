@@ -14,6 +14,7 @@
 
 @implementation ViewController
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -22,9 +23,19 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)Start:(id)sender {
+    self.motionData = [[MotionData alloc] init];
+    if (![self.motionData startCaptureData]) {
+        [self showAlertMessage:@"Failed to start update acceleration data."];
+    } else {
+        NSLog(@"Start to collect sensor data.");
+    }
+}
+//- (IBAction)addBumpRecord:(id)sender {
+//    [self.motionData addBump];
+//}
 
 - (IBAction)stopCaptureData:(id)sender {
     [self.motionData stopCaptureData];
@@ -46,7 +57,6 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"Okey" style:UIAlertActionStyleDefault handler:nil]];
     
     [self presentViewController:alertController animated:YES completion:nil];
-    
 }
 
 @end

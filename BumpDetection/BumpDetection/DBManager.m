@@ -106,10 +106,16 @@ static sqlite3_stmt *statement = nil;
     
     if (sqlite3_open(dbpath, &db) == SQLITE_OK)
     {
-        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into BumpRecord (time, ax, ay, az, latitude, longitude, streetName, travelDirection) values "];
+//        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into BumpRecord (time, ax, ay, az, latitude, longitude, streetName, travelDirection) values "];
         
+//        for (id obj in buffer) {
+//            NSString *value = [NSString stringWithFormat:@"(\'%@\', %@, %@, %@, %@, %@, \'%@\', %@), ", obj[0], obj[1], obj[2], obj[3], obj[4], obj[5], obj[6], obj[7]];
+//            [insertSQL appendString:value];
+//        }
+        
+        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into BumpRecord (time, ax, ay, az, streetName, travelDirection) values "];
         for (id obj in buffer) {
-            NSString *value = [NSString stringWithFormat:@"(\'%@\', %@, %@, %@, %@, %@, \'%@\', %@), ", obj[0], obj[1], obj[2], obj[3], obj[4], obj[5], obj[6], obj[7]];
+            NSString *value = [NSString stringWithFormat:@"(\'%@\', %@, %@, %@, \'%@\', %@), ", obj[0], obj[1], obj[2], obj[3], obj[4], obj[5]];
             [insertSQL appendString:value];
         }
         [insertSQL deleteCharactersInRange:NSMakeRange([insertSQL length] - 2, 2)];
