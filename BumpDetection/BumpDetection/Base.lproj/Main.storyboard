@@ -59,6 +59,7 @@
                                 <rect key="frame" x="344" y="7" width="50" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Map"/>
                                 <connections>
                                     <segue destination="eSj-5s-Ixg" kind="show" id="4PI-mj-TAh"/>
@@ -83,27 +84,7 @@
                     <view key="view" contentMode="scaleToFill" id="0A0-14-8ty">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleAspectFit" placeholderIntrinsicWidth="80" placeholderIntrinsicHeight="40" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T7p-RI-SGI">
-                                <rect key="frame" x="167" y="696" width="80" height="40"/>
-                                <color key="backgroundColor" red="0.40000000600000002" green="0.40000000600000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="80" id="0FZ-dR-G45"/>
-                                    <constraint firstAttribute="height" constant="40" id="GfF-2K-Bg6"/>
-                                </constraints>
-                                <state key="normal" title="Bump">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="addBumpMarker:" destination="eSj-5s-Ixg" eventType="touchUpInside" id="b4H-WZ-i90"/>
-                                </connections>
-                            </button>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="T7p-RI-SGI" firstAttribute="centerX" secondItem="0A0-14-8ty" secondAttribute="centerX" id="7J3-1j-ltn"/>
-                            <constraint firstItem="6bs-uu-4w7" firstAttribute="top" secondItem="T7p-RI-SGI" secondAttribute="bottom" id="iaO-yl-o6b"/>
-                        </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
                 </viewController>
@@ -131,5 +112,5 @@
             <point key="canvasLocation" x="554" y="229"/>
         </scene>
     </scenes>
-    <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+    <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>

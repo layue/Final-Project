@@ -21,8 +21,10 @@
 @property CMMotionManager *motionManager;
 @property (strong, nonatomic) NSMutableArray *bumpSmoothRecord;
 @property (weak) id <AddMapMarkerDelegate> markerDelegate;
+@property (strong, nonatomic) NSMutableArray *accData;
 
 - (BOOL) startCaptureData;
 - (void) stopCaptureData;
-- (void) addBump;
+- (BOOL) writeBufferToDB:(NSMutableArray *) buffer;
+//- (void) addBump;
 @end

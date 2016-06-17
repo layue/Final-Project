@@ -9,27 +9,24 @@
 #import "MapViewController.h"
 @import GoogleMaps;
 
-@implementation MapViewController {
-    BOOL firstLocationUpdate;
-    NSMutableArray *accData;
-}
+@implementation MapViewController
 
--(void) showHideNavbar:(id) sender
-{
-    // write code to show/hide nav bar here
-    // check if the Navigation Bar is shown
-    if (self.navigationController.navigationBar.hidden == NO)
-    {
-        // hide the Navigation Bar
-        [self.navigationController setNavigationBarHidden:YES animated:YES];
-    }
-    // if Navigation Bar is already hidden
-    else if (self.navigationController.navigationBar.hidden == YES)
-    {
-        // Show the Navigation Bar
-        [self.navigationController setNavigationBarHidden:NO animated:YES];
-    }
-}
+//-(void) showHideNavbar:(id) sender
+//{
+//    // write code to show/hide nav bar here
+//    // check if the Navigation Bar is shown
+//    if (self.navigationController.navigationBar.hidden == NO)
+//    {
+//        // hide the Navigation Bar
+//        [self.navigationController setNavigationBarHidden:YES animated:YES];
+//    }
+//    // if Navigation Bar is already hidden
+//    else if (self.navigationController.navigationBar.hidden == YES)
+//    {
+//        // Show the Navigation Bar
+//        [self.navigationController setNavigationBarHidden:NO animated:YES];
+//    }
+//}
 
 - (void) viewDidLoad {
     [super viewDidLoad];
@@ -47,14 +44,19 @@
 //    [self.view addSubview:_mapView];
     self.view = _mapView;
     
-    MotionData *motionData = [[MotionData alloc] init];
-    motionData.markerDelegate = self;
-    [motionData startCaptureData];
+    _motionData.markerDelegate = self;
     
-    accData = [[NSMutableArray alloc] init];
     
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showHideNavbar:)];
-    [self.view addGestureRecognizer:tapGesture];
+    
+//    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showHideNavbar:)];
+//    [self.view addGestureRecognizer:tapGesture];
+}
+
+- (void) addHistoryMarker {
+    CLLocationCoordinate2D position = CLLocationCoordinate2DMake(10, 10);
+    GMSMarker *marker = [GMSMarker markerWithPosition:position];
+    marker.appearAnimation = kGMSMarkerAnimationPop;
+    marker.map = _mapView;
 }
 
 - (void)dealloc {
@@ -67,9 +69,9 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-    if (!firstLocationUpdate) {
+    if (!_firstLocationUpdate) {
         // If the first location update has not yet been recieved, then jump to that location.
-        firstLocationUpdate = YES;
+        _firstLocationUpdate = YES;
         CLLocation *location = [change objectForKey:NSKeyValueChangeNewKey];
         _mapView.camera = [GMSCameraPosition cameraWithTarget:location.coordinate
                                                          zoom:14];
@@ -78,9 +80,9 @@
     }
 }
 
-- (IBAction)addBumpMarker:(id)sender {
-    [self addMarkerX:0 Y:0 Z:0];
-}
+//- (IBAction)addBumpMarker:(id)sender {
+//    [self addMarkerX:0 Y:0 Z:0];
+//}
 
 - (void) addMarkerX:(double)x Y:(double)y Z:(double)z
 {
@@ -94,15 +96,15 @@
         marker.appearAnimation = kGMSMarkerAnimationPop;
         marker.map = _mapView;
         
-        if (accData.count < 10) {
-            [accData addObject:@[[NSDate date], [NSNumber numberWithDouble:x], [NSNumber numberWithDouble:y], [NSNumber numberWithDouble:z], [NSNumber numberWithDouble:marker.position.latitude], [NSNumber numberWithDouble:marker.position.longitude], marker.title, [NSNumber numberWithDouble:_mapView.myLocation.course]]];
-        } else {
-            if ([[DBManager getSharedInstance] saveData:accData]) {
-                [accData removeAllObjects];
-            } else {
-                NSLog(@"Failed to write buffer to database.");
-            }
-        }
+//        if (_accData.count < 500) {
+//            [_accData addObject:@[[NSDate date], [NSNumber numberWithDouble:x], [NSNumber numberWithDouble:y], [NSNumber numberWithDouble:z], [NSNumber numberWithDouble:marker.position.latitude], [NSNumber numberWithDouble:marker.position.longitude], marker.title, [NSNumber numberWithDouble:_mapView.myLocation.course]]];
+//        } else {
+//            if ([_motionData writeBufferToDB:_accData]) {
+//                [_accData removeAllObjects];
+//            } else {
+//                NSLog(@"Failed to write buffer to database.");
+//            }
+//        }
     };
     [geocoder reverseGeocodeCoordinate:_mapView.myLocation.coordinate completionHandler:RGHdl];
 }
