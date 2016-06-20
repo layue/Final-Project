@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
+#import <CoreLocation/CoreLocation.h>
 #import "DBManager.h"
 
 @protocol AddMapMarkerDelegate <NSObject>
@@ -16,12 +17,20 @@
 
 @end
 
-@interface MotionData : NSObject
+@protocol AlertDelegate <NSObject>
+
+- (void) showAlertMessage:(NSString *) myMessage;
+
+@end
+
+@interface MotionData : NSObject <CLLocationManagerDelegate>
 
 @property CMMotionManager *motionManager;
+@property CLLocationManager *locationManager;
 @property (strong, nonatomic) NSMutableArray *bumpSmoothRecord;
-@property (weak) id <AddMapMarkerDelegate> markerDelegate;
 @property (strong, nonatomic) NSMutableArray *accData;
+@property (weak) id <AddMapMarkerDelegate> markerDelegate;
+@property (weak) id <AlertDelegate> alertDelegate;
 
 - (BOOL) startCaptureData;
 - (void) stopCaptureData;

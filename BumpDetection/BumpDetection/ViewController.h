@@ -11,7 +11,7 @@
 #import "DBManager.h"
 #import "MotionData.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <AlertDelegate>
 
 @property (strong, nonatomic) kMeansCluster *kMeans;
 @property (strong, nonatomic) MotionData *motionData;

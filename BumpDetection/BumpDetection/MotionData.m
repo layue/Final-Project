@@ -15,21 +15,23 @@
     BOOL isSuccess = YES;
     
     self.motionManager = [[CMMotionManager alloc] init];
+    self.locationManager = [[CLLocationManager alloc] init];
     self.bumpSmoothRecord = [[NSMutableArray alloc] init];
     self.accData = [[NSMutableArray alloc] init];
     [UIDevice currentDevice].batteryMonitoringEnabled = YES;
     
-    if (!self.motionManager.deviceMotionAvailable) {
+    if (!self.motionManager.deviceMotionAvailable || ![CLLocationManager locationServicesEnabled]) {
         isSuccess = NO;
         return isSuccess;
     }
     
-//Push method
+//Motion sensors start. Push method
     self.motionManager.deviceMotionUpdateInterval = 1;
     
     CMDeviceMotionHandler dmHandler = ^(CMDeviceMotion *motion, NSError * error){
         CMAcceleration acc = motion.userAcceleration;
         CMRotationMatrix rotMtx = motion.attitude.rotationMatrix;
+        NSMutableArray *tempAccData = [[NSMutableArray alloc] init];
 
         double x = acc.x * rotMtx.m11 + acc.y * rotMtx.m21 + acc.z * rotMtx.m31;
         double y = acc.x * rotMtx.m12 + acc.y * rotMtx.m22 + acc.z * rotMtx.m32;
@@ -40,11 +42,30 @@
             
             NSLog(@"There is a bump!");
         
-            if (_accData.count < 500) {
-                [_accData addObject:@[[NSDate date], [NSString stringWithFormat:@"%.3f", x], [NSString stringWithFormat:@"%.3f", y], [NSString stringWithFormat:@"%.3f", z], [NSMutableString stringWithString:@""],[NSNumber numberWithFloat:[UIDevice currentDevice].batteryLevel]]];
+            if (self.accData.count < 500) {
+//accData structure: timestamp, accX, accY, accZ, lantitude, longitude, course, speed, battery level, street number and name
+                [tempAccData addObjectsFromArray:@[[NSDate date], [NSString stringWithFormat:@"%.3f", x], [NSString stringWithFormat:@"%.3f", y], [NSString stringWithFormat:@"%.3f", z], [NSString stringWithFormat:@"%.5f", self.locationManager.location.coordinate.latitude], [NSString stringWithFormat:@"%.5f", self.locationManager.location.coordinate.longitude], [NSNumber numberWithDouble:self.locationManager.location.course], [NSNumber numberWithDouble:self.locationManager.location.speed], [NSNumber numberWithFloat:[UIDevice currentDevice].batteryLevel]]];
+                
+                
+                CLGeocodeCompletionHandler CLGHandler = ^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
+                    //判断是否有错误或者placemarks是否为空
+                    if (error !=nil || placemarks.count==0) {
+                        NSLog(@"%@",error);
+                        return ;
+                    }
+                    [tempAccData addObject: [placemarks lastObject].name];
+                    
+                    [self.accData addObject:tempAccData];
+                    //TODO: log. Delete later
+                    NSLog(@"%@", [self.accData lastObject]);
+                };
+                CLGeocoder *geocoder=[[CLGeocoder alloc] init];
+//Reverse geocode, from location to address description
+                [geocoder reverseGeocodeLocation:self.locationManager.location completionHandler: CLGHandler];
+
             } else {
-                if ([self writeBufferToDB:_accData]) {
-                    [_accData removeAllObjects];
+                if ([self writeBufferToDB:self.accData]) {
+                    [self.accData removeAllObjects];
                 } else {
                     NSLog(@"Failed to write buffer to database.");
                 }
@@ -53,14 +74,38 @@
         //else ignore the event
     };
     //End of handler block
-    
     [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:dmHandler];
+    
+//Start location service
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
+    self.locationManager.distanceFilter = 500; // meters
+    self.locationManager.pausesLocationUpdatesAutomatically = YES;
+    self.locationManager.delegate = self;
+    [self.locationManager startUpdatingLocation];
     
     return isSuccess;
 }
 
+//The location manager reports events to the locationManager:didUpdateLocations: method of its delegate when they become available
+//- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+//    CLLocation* location = [locations lastObject];
+//    NSDate* eventDate = location.timestamp;
+//    NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
+//    if (fabs(howRecent) < 15.0) {
+//        // If the event is recent, do something with it.
+//        NSLog(@"latitude %+.6f, longitude %+.6f\n",
+//              location.coordinate.latitude,
+//              location.coordinate.longitude);
+//    }
+//}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    [self.alertDelegate showAlertMessage:@"Cannot update your location! Please try again later."];
+}
+
 - (void) stopCaptureData {
     [self.motionManager stopDeviceMotionUpdates];
+    [self.locationManager stopUpdatingLocation];
 }
 
 //Use this method to store original Smooth and Bumpy data to analyse. Can be delete after analyse
@@ -83,22 +128,5 @@
     
     return [[DBManager getSharedInstance] saveData:buffer];
 }
-
-//- (void) addBump {
-//    NSDate *from = [NSDate dateWithTimeIntervalSinceNow:-0.5];
-//    NSDate *to = [NSDate date];
-//    
-//    if ([self.bumpSmoothRecord count] > 0) {
-//        NSUInteger last = [self.bumpSmoothRecord count] - 1;
-//        int TO = 1;
-//        if ([from compare:self.bumpSmoothRecord[last][TO]] == NSOrderedAscending) {
-//            [self.bumpSmoothRecord[last] replaceObjectAtIndex:TO withObject:to];
-//        } else {
-//            [self.bumpSmoothRecord addObject:[NSMutableArray arrayWithObjects:from, to, @"Bump", nil]];
-//        }
-//    } else {
-//        [self.bumpSmoothRecord addObject:[NSMutableArray arrayWithObjects:from, to, @"Bump", nil]];
-//    }
-//}
 
 @end

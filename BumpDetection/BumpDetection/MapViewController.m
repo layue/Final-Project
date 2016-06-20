@@ -41,22 +41,26 @@
                forKeyPath:@"myLocation"
                   options:NSKeyValueObservingOptionNew
                   context:NULL];
-//    [self.view addSubview:_mapView];
     self.view = _mapView;
     
     _motionData.markerDelegate = self;
     
-    
-    
+//TODO: Add all history markers    
+    [self addHistoryMarker];
 //    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showHideNavbar:)];
 //    [self.view addGestureRecognizer:tapGesture];
 }
 
 - (void) addHistoryMarker {
-    CLLocationCoordinate2D position = CLLocationCoordinate2DMake(10, 10);
-    GMSMarker *marker = [GMSMarker markerWithPosition:position];
-    marker.appearAnimation = kGMSMarkerAnimationPop;
-    marker.map = _mapView;
+//accData structure: timestamp, accX, accY, accZ, lantitude, longitude, course, speed, battery level, street name and number
+    for (NSMutableArray *dataObj in _motionData.accData) {
+        CLLocationCoordinate2D position = CLLocationCoordinate2DMake([dataObj[4] doubleValue], [dataObj[5] doubleValue]);
+        GMSMarker *marker = [GMSMarker markerWithPosition:position];
+        marker.appearAnimation = kGMSMarkerAnimationPop;
+        marker.icon = [GMSMarker markerImageWithColor:[UIColor blueColor]];
+        marker.title = dataObj[9];
+        marker.map = _mapView;
+    }
 }
 
 - (void)dealloc {
