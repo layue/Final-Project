@@ -16,5 +16,6 @@
 @property (strong, nonatomic) CLLocationManager *locationManager;
 @property BOOL firstLocationUpdate;
 @property (strong, nonatomic) MotionData *motionData;
+@property (strong, nonatomic) NSArray *accDBData;
 
 @end

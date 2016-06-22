@@ -37,33 +37,32 @@
         double y = acc.x * rotMtx.m12 + acc.y * rotMtx.m22 + acc.z * rotMtx.m32;
         double z = acc.x * rotMtx.m12 + acc.y * rotMtx.m23 + acc.z * rotMtx.m33;
 //use a threshold to detect bump, but depending on high or low speed, the threshold should change
-        if (fabs(z) >= 0.5) {
+        if ((self.locationManager.location.speed >= 7 && fabs(z) >= 0.75) || (self.locationManager.location.speed < 7 && fabs(z) >= 0.45)) {
             [self.markerDelegate addMarkerX:x Y:y Z:z];
             
             NSLog(@"There is a bump!");
         
-            if (self.accData.count < 500) {
 //accData structure: timestamp, accX, accY, accZ, lantitude, longitude, course, speed, battery level, street number and name
-                [tempAccData addObjectsFromArray:@[[NSDate date], [NSString stringWithFormat:@"%.3f", x], [NSString stringWithFormat:@"%.3f", y], [NSString stringWithFormat:@"%.3f", z], [NSString stringWithFormat:@"%.5f", self.locationManager.location.coordinate.latitude], [NSString stringWithFormat:@"%.5f", self.locationManager.location.coordinate.longitude], [NSNumber numberWithDouble:self.locationManager.location.course], [NSNumber numberWithDouble:self.locationManager.location.speed], [NSNumber numberWithFloat:[UIDevice currentDevice].batteryLevel]]];
+            [tempAccData addObjectsFromArray:@[[NSDate date], [NSString stringWithFormat:@"%.3lf", x], [NSString stringWithFormat:@"%.3lf", y], [NSString stringWithFormat:@"%.3lf", z], [NSString stringWithFormat:@"%.5lf", self.locationManager.location.coordinate.latitude], [NSString stringWithFormat:@"%.5lf", self.locationManager.location.coordinate.longitude], [NSNumber numberWithDouble:self.locationManager.location.course], [NSNumber numberWithDouble:self.locationManager.location.speed], [NSNumber numberWithFloat:[UIDevice currentDevice].batteryLevel]]];
+            
+            
+            CLGeocodeCompletionHandler CLGHandler = ^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
+                //判断是否有错误或者placemarks是否为空
+                if (error !=nil || placemarks.count==0) {
+                    NSLog(@"%@",error);
+                    return ;
+                }
+                [tempAccData addObject: [placemarks lastObject].name];
                 
-                
-                CLGeocodeCompletionHandler CLGHandler = ^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
-                    //判断是否有错误或者placemarks是否为空
-                    if (error !=nil || placemarks.count==0) {
-                        NSLog(@"%@",error);
-                        return ;
-                    }
-                    [tempAccData addObject: [placemarks lastObject].name];
-                    
-                    [self.accData addObject:tempAccData];
-                    //TODO: log. Delete later
-                    NSLog(@"%@", [self.accData lastObject]);
+                [self.accData addObject:tempAccData];
+                //TODO: log. Delete later
+                NSLog(@"%@", [self.accData lastObject]);
                 };
-                CLGeocoder *geocoder=[[CLGeocoder alloc] init];
+            CLGeocoder *geocoder=[[CLGeocoder alloc] init];
 //Reverse geocode, from location to address description
-                [geocoder reverseGeocodeLocation:self.locationManager.location completionHandler: CLGHandler];
+            [geocoder reverseGeocodeLocation:self.locationManager.location completionHandler: CLGHandler];
 
-            } else {
+            if(self.accData.count >= 2) {
                 if ([self writeBufferToDB:self.accData]) {
                     [self.accData removeAllObjects];
                 } else {
@@ -127,6 +126,17 @@
     } //because now all records are labled as Bump, so do not need change Smooth to Bump
     
     return [[DBManager getSharedInstance] saveData:buffer];
+}
+
+- (NSArray *) getDBRecord {
+    double lan = self.locationManager.location.coordinate.latitude;
+    double lon = self.locationManager.location.coordinate.longitude;
+    
+    NSMutableString *selectStatement = [NSMutableString stringWithFormat:@"select latitude, longitude, streetName from BumpRecord where latitude between %lf and %lf and longitude between %lf and %lf", lan - 0.05, lan + 0.05, lon - 0.05, lon + 0.05];
+    
+    NSLog(@"%@", selectStatement);
+    
+    return [[DBManager getSharedInstance] readDB:selectStatement];
 }
 
 @end

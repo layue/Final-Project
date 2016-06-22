@@ -61,14 +61,16 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    UIViewController *destination = segue.destinationViewController;
-    if ([destination respondsToSelector:@selector(setMotionData:)]) {
-        [destination setValue:self.motionData forKey:@"motionData"];
-//        if ([self.motionData writeBufferToDB: self.motionData.accData]) {
-//            [self.motionData.accData removeAllObjects];
-//        } else {
-//            NSLog(@"Failed to write buffer to database.");
-//        }
+    if([segue.identifier isEqualToString:@"MapView"]) {
+        UIViewController *destination = segue.destinationViewController;
+        if ([destination respondsToSelector:@selector(setMotionData:)]) {
+            [destination setValue:self.motionData forKey:@"motionData"];
+        }
+        SEL selector = NSSelectorFromString(@"setAccDBData:");
+        if ([destination respondsToSelector:selector]) {
+            NSArray *tempData = [self.motionData getDBRecord];
+            [destination setValue:tempData forKey:@"accDBData"];
+        }
     }
 }
 

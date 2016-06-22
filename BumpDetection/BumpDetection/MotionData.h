@@ -35,5 +35,6 @@
 - (BOOL) startCaptureData;
 - (void) stopCaptureData;
 - (BOOL) writeBufferToDB:(NSMutableArray *) buffer;
+- (NSArray *) getDBRecord;
 //- (void) addBump;
 @end

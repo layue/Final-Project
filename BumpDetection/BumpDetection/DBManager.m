@@ -40,7 +40,8 @@ static sqlite3_stmt *statement = nil;
         if (sqlite3_open(dbpath, &db) == SQLITE_OK)
         {
             char *errMsg;
-            const char *sql_stmt = "create table if not exists BumpRecord (time text, ax float, ay float, az float, latitude float, longitude float, streetName text, travelDirection float)";
+//TODO: Change DB. Create
+            const char *sql_stmt = "create table if not exists BumpRecord (time text, ax double, ay double, az double, latitude double, longitude double, travelDirection double, speed double, batteryLevel double, streetName text)";
             if (sqlite3_exec(db, sql_stmt, NULL, NULL, &errMsg)
                 != SQLITE_OK)
             {
@@ -106,25 +107,19 @@ static sqlite3_stmt *statement = nil;
     
     if (sqlite3_open(dbpath, &db) == SQLITE_OK)
     {
-//        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into BumpRecord (time, ax, ay, az, latitude, longitude, streetName, travelDirection) values "];
-        
-//        for (id obj in buffer) {
-//            NSString *value = [NSString stringWithFormat:@"(\'%@\', %@, %@, %@, %@, %@, \'%@\', %@), ", obj[0], obj[1], obj[2], obj[3], obj[4], obj[5], obj[6], obj[7]];
-//            [insertSQL appendString:value];
-//        }
-        
-        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into BumpRecord (time, ax, ay, az, streetName, travelDirection) values "];
+
+//TODO: Change DB. Insert
+        NSMutableString *insertSQL = [NSMutableString stringWithFormat:@"insert into BumpRecord (time, ax, ay, az, latitude, longitude, travelDirection, speed, batteryLevel, streetName) values "];
         for (id obj in buffer) {
-            NSString *value = [NSString stringWithFormat:@"(\'%@\', %@, %@, %@, \'%@\', %@), ", obj[0], obj[1], obj[2], obj[3], obj[4], obj[5]];
+            NSString *value = [NSString stringWithFormat:@"(\'%@\', %@, %@, %@, %@, %@, %@, %@, %@, \'%@\'), ", obj[0], obj[1], obj[2], obj[3], obj[4], obj[5], obj[6], obj[7], obj[8], obj[9]];
             [insertSQL appendString:value];
         }
         [insertSQL deleteCharactersInRange:NSMakeRange([insertSQL length] - 2, 2)];
         
         const char *insert_stmt = [insertSQL UTF8String];
-        sqlite3_prepare_v2(db, insert_stmt,-1, &statement, NULL);
+        sqlite3_prepare_v2(db, insert_stmt, -1, &statement, NULL);
 
-        int state = sqlite3_step(statement);
-        if (state == SQLITE_DONE) {
+        if (sqlite3_step(statement) == SQLITE_DONE) {
             return YES;
         }
         else {
@@ -132,6 +127,30 @@ static sqlite3_stmt *statement = nil;
         }
     }
     return NO;
+}
+
+//accData structure: timestamp, accX, accY, accZ, lantitude, longitude, course, speed, battery level, street number and name
+- (NSArray *) readDB: (NSString *) selectStatement {
+    NSMutableArray *accDBData = [[NSMutableArray alloc] init];
+    const char *dbpath = [dbPath UTF8String];
+    
+    if (sqlite3_open(dbpath, &db) == SQLITE_OK) {
+        const char *select_stmt = [selectStatement UTF8String];
+        if(sqlite3_prepare_v2(db, select_stmt, -1, &statement, NULL) == SQLITE_OK) {
+            while(sqlite3_step(statement) == SQLITE_ROW) {
+                double lan = sqlite3_column_double(statement, 0);
+                double lon = sqlite3_column_double(statement, 1);
+                char *name = (char *)sqlite3_column_text(statement, 2);
+                [accDBData addObject:@[[NSNumber numberWithDouble:lan], [NSNumber numberWithDouble:lon], [NSString stringWithUTF8String:name]]];
+            }
+        } else {
+            NSLog(@"Failed to read data from DB!");
+        }
+    } else {
+        NSLog(@"Failed to open DB!");
+    }
+    
+    return accDBData;
 }
 
 @end

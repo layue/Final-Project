@@ -18,5 +18,5 @@
 - (BOOL) createDB;
 - (BOOL) clearDB;
 - (BOOL) saveData:(NSMutableArray *) buffer;
-
+- (NSArray *) readDB: (NSString *) selectStatement;
 @end

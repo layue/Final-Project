@@ -61,6 +61,21 @@
         marker.title = dataObj[9];
         marker.map = _mapView;
     }
+    
+    //DBManager, get data from model, delegate to view.
+    //open db
+    //read data
+    //current.lan +- 0.05, current.lon +- 0.05
+    
+//accDBData, simplified structure :lantitude, longitude, street name and number
+    for (NSArray *dataDBObj in _accDBData) {
+        CLLocationCoordinate2D position = CLLocationCoordinate2DMake([dataDBObj[0] doubleValue], [dataDBObj[1] doubleValue]);
+        GMSMarker *marker = [GMSMarker markerWithPosition:position];
+        marker.appearAnimation = kGMSMarkerAnimationPop;
+        marker.icon = [GMSMarker markerImageWithColor:[UIColor blueColor]];
+        marker.title = dataDBObj[2];
+        marker.map = _mapView;
+    }
 }
 
 - (void)dealloc {
@@ -88,6 +103,7 @@
 //    [self addMarkerX:0 Y:0 Z:0];
 //}
 
+//TODO: X Y Z are useless
 - (void) addMarkerX:(double)x Y:(double)y Z:(double)z
 {
     GMSMarker *marker = [[GMSMarker alloc] init];
