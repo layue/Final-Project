@@ -131,8 +131,11 @@
 - (NSArray *) getDBRecord {
     double lan = self.locationManager.location.coordinate.latitude;
     double lon = self.locationManager.location.coordinate.longitude;
+    double course = self.locationManager.location.course;
     
-    NSMutableString *selectStatement = [NSMutableString stringWithFormat:@"select latitude, longitude, streetName from BumpRecord where latitude between %lf and %lf and longitude between %lf and %lf", lan - 0.05, lan + 0.05, lon - 0.05, lon + 0.05];
+    NSMutableString *selectStatement = [NSMutableString stringWithFormat:@"select latitude, longitude, streetName from BumpRecord where travelDirection between %lf and %lf and latitude between %lf and %lf and longitude between %lf and %lf", course == -1.0 ? 0.0 : fmod(course - 10, 360.0), course == -1.0 ? 360.0 : fmodf(course + 10, 360.0), lan - 0.05, lan + 0.05, lon - 0.05, lon + 0.05];
+    
+//    NSMutableString *selectStatement = [NSMutableString stringWithFormat:@"select latitude, longitude, streetName from BumpRecord where travelDirection between %lf and %lf and latitude between %lf and %lf and longitude between %lf and %lf", fmodf(120.0,360.0), fmod(128.0, 360.0), lan - 0.05, lan + 0.05, lon - 0.05, lon + 0.05];
     
     NSLog(@"%@", selectStatement);
     
