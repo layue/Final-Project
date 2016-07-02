@@ -77,15 +77,57 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     }
 }
 
+//If an error occurs and your services can’t be advertised, access to the error
 - (void) peripheralManagerDidStartAdvertising:(CBPeripheralManager *)peripheral error:(NSError *)error {
     if(error == nil) {
         NSLog(@"Peripheral starts to advertise. Info: %@", peripheral);
+    } else {
+        NSLog(@"Peripheral cannot be advertised. Info: %@", error);
     }
 }
 
+- (void) peripheralManager:(CBPeripheralManager *)peripheral
+     didReceiveReadRequest:(CBATTRequest *)request {
+    
+//Make sure the characteristic in your device’s database matches the one that the remote central specified in the original read reques
+    if ([request.characteristic.UUID isEqual:self.customCharacteristic.UUID]) {
+        
+//Make sure that the read request isn’t asking to read from an index position that is outside the bounds of your characteristic’s value
+        if (request.offset > self.customCharacteristic.value.length) {
+            
+            [self.peripheralManager respondToRequest:request
+                                       withResult:CBATTErrorInvalidOffset];
+            
+            return;
+        }
+
+//Build up the data for responding to central
+        request.value = [self.customCharacteristic.value subdataWithRange:NSMakeRange(request.offset,
+                                self.customCharacteristic.value.length - request.offset)];
+        
+//Send the data to the central
+        [self.peripheralManager respondToRequest:request withResult:CBATTErrorSuccess];
+    }
+    
+}
+
+- (void) peripheralManager:(CBPeripheralManager *)peripheral didReceiveWriteRequests:(NSArray<CBATTRequest *> *)requests {
+//Fullfill the first write request
+    self.customCharacteristic.value = [requests objectAtIndex:0].value;
+    
+//Respond to the central the first write request has been fullfilled
+    [self.peripheralManager respondToRequest:[requests objectAtIndex:0]
+                               withResult:CBATTErrorSuccess];
+}
+
 - (void) peripheralManager:(CBPeripheralManager *)peripheral central:(CBCentral *)central didSubscribeToCharacteristic:(CBCharacteristic *)characteristic {
+    
     NSLog(@"The central %@ dis subscribe to the peripheral %@", central, peripheral);
-//    [self.peripheralManager updateValue:<#(nonnull NSData *)#> forCharacteristic:<#(nonnull CBMutableCharacteristic *)#> onSubscribedCentrals:<#(nullable NSArray<CBCentral *> *)#>];
+    
+//    Build up some data for update to the central
+    NSData *data = [[NSData alloc] init];
+    
+    [self.peripheralManager updateValue:data forCharacteristic:self.customCharacteristic onSubscribedCentrals:nil];
 }
 
 

@@ -58,6 +58,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 }
 
 - (void) connectFirstPeripheral {
+//TODO: Add a timer for timeout connection
     [self.centralManager connectPeripheral:self.peripheral options:nil];
 //    if ([self.peripheralList count] == 0) {
 //        NSLog(@"There is no periperal to connect!");
@@ -107,21 +108,28 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     if ([service.UUID isEqual:[CBUUID UUIDWithString:kServiceUUID]]) {
         for (CBCharacteristic *characteristic in service.characteristics) {
             if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:kCharacteristicUUID]]) {
+//                Subscribe to the characteristic
                 [peripheral setNotifyValue:YES forCharacteristic:characteristic];
+//                Read characteristic's value manually
+                [peripheral readValueForCharacteristic:characteristic];
+//                Write to characteristic's value manually
+//                [peripheral writeValue:[NSData] forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
             }
         }
     }
 }
 
+//When the characteristic's value of a peripheral changes, notify the app here
 - (void) peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     if(error) {
-        NSLog(@"Error changing notification state: %@", error.localizedDescription);
+        NSLog(@"Error while reading peripheral data %@", error.localizedDescription);
     }
     
     if (![characteristic.UUID isEqual:[CBUUID UUIDWithString:kCharacteristicUUID]]) {
         return;
     }
     
+    NSLog(@"Characteristics value: %@", characteristic.value);
     if (characteristic.isNotifying) {
         NSLog(@"Notification began on %@", characteristic);
         [peripheral readValueForCharacteristic:characteristic];
@@ -129,6 +137,23 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
         // so disconnect from the peripheral
         NSLog(@"Notification stopped on %@.  Disconnecting", characteristic);
         [self.centralManager cancelPeripheralConnection:self.peripheral];
+    }
+}
+
+//Access to the error of subscribing
+- (void) peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
+    if(error) {
+        NSLog(@"Error changing notification state: %@", error.localizedDescription);
+    }
+}
+
+//Access to the error of write to peripheral characteristic
+- (void)peripheral:(CBPeripheral *)peripheral
+didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
+             error:(NSError *)error {
+    
+    if (error) {
+        NSLog(@"Error writing characteristic value: %@", error.localizedDescription);
     }
 }
 
