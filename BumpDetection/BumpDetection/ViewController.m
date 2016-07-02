@@ -18,7 +18,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.kMeans = [[kMeansCluster alloc] init];
+//    self.kMeans = [[kMeansCluster alloc] init];
+    self.bleCentral = [[BLECentral alloc] init];
+    self.blePeripheral = [[BLEPeripheral alloc] init];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -72,6 +74,20 @@
             [destination setValue:tempData forKey:@"accDBData"];
         }
     }
+}
+
+
+- (IBAction)centralButton:(id)sender {
+    [self.bleCentral workAsCentral];
+}
+
+//Connect to one discovered peripheral
+- (IBAction)connectPeripheral:(id)sender {
+    [self.bleCentral connectFirstPeripheral];
+}
+
+- (IBAction)peripheralButton:(id)sender {
+    [self.blePeripheral workAsPeripheral];
 }
 
 @end

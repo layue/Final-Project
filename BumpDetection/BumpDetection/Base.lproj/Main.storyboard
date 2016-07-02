@@ -49,6 +49,33 @@
                                     <action selector="stopCaptureData:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Vub-DW-OdB"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u3d-fG-9kP">
+                                <rect key="frame" x="93" y="424" width="50" height="30"/>
+                                <state key="normal" title="Central"/>
+                                <connections>
+                                    <action selector="centralButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Vyh-YN-dyD"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kHn-S9-hXo">
+                                <rect key="frame" x="265" y="424" width="70" height="30"/>
+                                <state key="normal" title="Peripheral"/>
+                                <connections>
+                                    <action selector="peripheralButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Hfl-VU-qdN"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="60B-Tg-Hr7">
+                                <rect key="frame" x="178" y="492" width="59" height="30"/>
+                                <state key="normal" title="Connect"/>
+                                <connections>
+                                    <action selector="connectPeripheral:" destination="BYZ-38-t0r" eventType="touchUpInside" id="tap-iw-w2j"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="State" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wQC-Rp-y4u">
+                                <rect key="frame" x="156" y="557" width="108" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -71,7 +98,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1097.5" y="228.5"/>
+            <point key="canvasLocation" x="1097" y="228"/>
         </scene>
         <!--Map View-->
         <scene sceneID="1p9-HO-1u4">
