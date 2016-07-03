@@ -76,7 +76,6 @@
     }
 }
 
-
 - (IBAction)centralButton:(id)sender {
     [self.bleCentral workAsCentral];
 }
@@ -88,6 +87,14 @@
 
 - (IBAction)peripheralButton:(id)sender {
     [self.blePeripheral workAsPeripheral];
+}
+
+- (IBAction)disconnect:(id)sender {
+    [self.bleCentral disconnect];
+}
+
+- (void) changeDeviceStateLabel: (NSString *) state {
+    self.deviceState.text = state;
 }
 
 @end

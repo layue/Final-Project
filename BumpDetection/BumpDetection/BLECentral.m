@@ -17,6 +17,35 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 }
 
+- (void) connectFirstPeripheral {
+    //TODO: Add a timer for timeout connection
+    
+    if (self.peripheral != NULL) {
+        [self.centralManager connectPeripheral:self.peripheral options:nil];
+    } else {
+        NSLog(@"There is no peripheral to connect!");
+    }
+    
+    //    if ([self.peripheralList count] == 0) {
+    //        NSLog(@"There is no periperal to connect!");
+    //    } else {
+    //        [self.centralManager connectPeripheral:self.peripheralList[0] options:nil];
+    //    }
+}
+
+- (void) disconnect {
+    if (self.peripheral != NULL && self.peripheral.state == CBPeripheralStateConnected) {
+        for(CBService *service in self.peripheral.services) {
+            for (CBCharacteristic *characteristic in service.characteristics) {
+                [self.peripheral setNotifyValue:NO forCharacteristic:characteristic];
+            }
+        }
+        [self.centralManager cancelPeripheralConnection:self.peripheral];
+    } else {
+        NSLog(@"Disconnect failed! There is no connected peripheral!");
+    }
+}
+
 - (void) centralManagerDidUpdateState:(CBCentralManager *)central {
     switch (central.state) {
         case CBCentralManagerStatePoweredOff:
@@ -54,16 +83,6 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 //    if(![self.peripheralList containsObject:peripheral]) {
 //        [self.peripheralList addObject:peripheral];
 //        NSLog(@"Discover one peripheral: %@", peripheral);
-//    }
-}
-
-- (void) connectFirstPeripheral {
-//TODO: Add a timer for timeout connection
-    [self.centralManager connectPeripheral:self.peripheral options:nil];
-//    if ([self.peripheralList count] == 0) {
-//        NSLog(@"There is no periperal to connect!");
-//    } else {
-//        [self.centralManager connectPeripheral:self.peripheralList[0] options:nil];
 //    }
 }
 
@@ -148,7 +167,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 }
 
 //Access to the error of write to peripheral characteristic
-- (void)peripheral:(CBPeripheral *)peripheral
+- (void) peripheral:(CBPeripheral *)peripheral
 didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error {
     
@@ -157,5 +176,11 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     }
 }
 
+//Access to the error of disconnect form the peripheral
+- (void) centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
+    if (error) {
+        NSLog(@"Error disconnect from peripheral: %@", error.localizedDescription);
+    }
+}
 
 @end

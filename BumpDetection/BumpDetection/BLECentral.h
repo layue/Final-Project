@@ -18,5 +18,6 @@
 
 - (void) workAsCentral;
 - (void) connectFirstPeripheral;
+- (void) disconnect;
 
 @end

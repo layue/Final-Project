@@ -19,6 +19,9 @@
 @property (strong, nonatomic) MotionData *motionData;
 @property (strong, nonatomic) BLECentral *bleCentral;
 @property (strong, nonatomic) BLEPeripheral *blePeripheral;
+@property (weak, nonatomic) IBOutlet UILabel *deviceState;
+
+- (void) changeDeviceStateLabel: (NSString *) state;
 
 @end
 
