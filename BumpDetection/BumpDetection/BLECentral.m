@@ -13,6 +13,14 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 
 @implementation BLECentral
 
+/*
+- Start up a central manager object
+- Discover and connect to peripheral devices that are advertising
+- Explore the data on a peripheral device after you’ve connected to it
+- Send read and write requests to a characteristic value of a peripheral’s service
+- Subscribe to a characteristic’s value to be notified when it is updated
+*/
+
 - (void) workAsCentral {
     self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 }
@@ -78,7 +86,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     
     if (self.peripheral != peripheral) {
         self.peripheral = peripheral;
-        NSLog(@"Connecting to peripheral %@", peripheral);
+        NSLog(@"Discover the peripheral: %@", peripheral);
     }
 //    if(![self.peripheralList containsObject:peripheral]) {
 //        [self.peripheralList addObject:peripheral];
@@ -127,10 +135,11 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     if ([service.UUID isEqual:[CBUUID UUIDWithString:kServiceUUID]]) {
         for (CBCharacteristic *characteristic in service.characteristics) {
             if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:kCharacteristicUUID]]) {
+                NSLog(@"Characteristic found with UUID: %@", characteristic.UUID);
 //                Subscribe to the characteristic
-                [peripheral setNotifyValue:YES forCharacteristic:characteristic];
+//                [peripheral setNotifyValue:YES forCharacteristic:characteristic];
 //                Read characteristic's value manually
-                [peripheral readValueForCharacteristic:characteristic];
+//                [peripheral readValueForCharacteristic:characteristic];
 //                Write to characteristic's value manually
 //                [peripheral writeValue:[NSData] forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
             }
@@ -148,7 +157,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
         return;
     }
     
-    NSLog(@"Characteristics value: %@", characteristic.value);
+    NSLog(@"Updated characteristics value: %@", characteristic.value);
     if (characteristic.isNotifying) {
         NSLog(@"Notification began on %@", characteristic);
         [peripheral readValueForCharacteristic:characteristic];
@@ -163,12 +172,13 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 - (void) peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     if(error) {
         NSLog(@"Error changing notification state: %@", error.localizedDescription);
+    } else {
+        NSLog(@"Update notification state: %@", characteristic);
     }
 }
 
 //Access to the error of write to peripheral characteristic
-- (void) peripheral:(CBPeripheral *)peripheral
-didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
+- (void) peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error {
     
     if (error) {
@@ -180,6 +190,8 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
 - (void) centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
     if (error) {
         NSLog(@"Error disconnect from peripheral: %@", error.localizedDescription);
+    } else {
+        NSLog(@"Successfully disconnect from the peripheral: %@", peripheral);
     }
 }
 

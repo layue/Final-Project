@@ -19,6 +19,16 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 
 @implementation BLEPeripheral
 
+/*
+- Start up a peripheral manager object
+- Set up services and characteristics on your local peripheral
+- Publish your services and characteristics to your device’s local database
+- Advertise your services
+- Respond to read and write requests from a connected central
+- Send updated characteristic values to subscribed centrals
+*/
+
+
 - (void) workAsPeripheral {
     self.peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
 }
@@ -122,10 +132,12 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 
 - (void) peripheralManager:(CBPeripheralManager *)peripheral central:(CBCentral *)central didSubscribeToCharacteristic:(CBCharacteristic *)characteristic {
     
-    NSLog(@"The central %@ dis subscribe to the peripheral %@", central, peripheral);
+    NSLog(@"The central %@ did subscribe to the peripheral %@", central, peripheral);
     
 //    Build up some data for update to the central
-    NSData *data = [[NSData alloc] init];
+    NSString *str = @"There is a test message";
+    NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+    data = [data subdataWithRange:NSMakeRange(0, data.length - 1)];
     
     [self.peripheralManager updateValue:data forCharacteristic:self.customCharacteristic onSubscribedCentrals:nil];
 }
