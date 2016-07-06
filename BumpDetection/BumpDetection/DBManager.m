@@ -14,11 +14,20 @@ static sqlite3_stmt *statement = nil;
 @implementation DBManager
 
 + (DBManager *) getSharedInstance {
-    if (!sharedInstance) {
-        sharedInstance = [[super allocWithZone:NULL]init];
-        [sharedInstance createDB];
-    }
+    static dispatch_once_t onceToken;
+    
+    dispatch_once(&onceToken, ^{
+        if (!sharedInstance) {
+            sharedInstance = [[super allocWithZone:NULL] init];
+        }
+    });
+    
+    [sharedInstance createDB];
     return sharedInstance;
+}
+
++ (id) allocWithZone:(struct _NSZone *)zone {
+    return [DBManager getSharedInstance];
 }
 
 - (BOOL) createDB {
