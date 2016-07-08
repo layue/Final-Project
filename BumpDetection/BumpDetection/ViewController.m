@@ -82,7 +82,7 @@
 
 //Connect to one discovered peripheral
 - (IBAction)connectPeripheral:(id)sender {
-    [self.bleCentral connectFirstPeripheral];
+    [self.bleCentral connectPeripheral];
 }
 
 - (IBAction)peripheralButton:(id)sender {

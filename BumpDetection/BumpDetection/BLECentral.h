@@ -17,7 +17,7 @@
 @property (strong, nonatomic) NSMutableArray *data;
 
 - (void) workAsCentral;
-- (void) connectFirstPeripheral;
+- (void) connectPeripheral;
 - (void) disconnect;
 
 @end

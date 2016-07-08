@@ -82,8 +82,8 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 
 - (void) peripheralManager:(CBPeripheralManager *)peripheral didAddService:(CBService *)service error:(NSError *)error {
     if(error == nil) {
-        [self.peripheralManager startAdvertising:@{CBAdvertisementDataLocalNameKey : @"LocalPName",
-            CBAdvertisementDataServiceUUIDsKey: @[[CBUUID UUIDWithString:kServiceUUID]]}];
+        [self.peripheralManager startAdvertising:@{CBAdvertisementDataLocalNameKey : @"BumPhone",CBAdvertisementDataServiceUUIDsKey: @[[CBUUID UUIDWithString:kServiceUUID]]}];
+//        NSLog(@"%@", self.peripheralManager.)
     }
 }
 
@@ -139,7 +139,16 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
     data = [data subdataWithRange:NSMakeRange(0, data.length - 1)];
     
-    [self.peripheralManager updateValue:data forCharacteristic:self.customCharacteristic onSubscribedCentrals:nil];
+    NSLog(@"%@", data);
+    
+    BOOL didSend = [self.peripheralManager updateValue:data forCharacteristic:self.customCharacteristic onSubscribedCentrals:nil];
+    
+    if (didSend) {
+        NSLog(@"Have successfully sent the data.");
+    } else {
+        NSLog(@"Failed to send data.");
+        return;
+    }
 }
 
 

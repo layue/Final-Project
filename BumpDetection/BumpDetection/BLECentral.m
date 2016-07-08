@@ -25,7 +25,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 }
 
-- (void) connectFirstPeripheral {
+- (void) connectPeripheral {
     //TODO: Add a timer for timeout connection
     
     if (self.peripheral != NULL) {
@@ -62,7 +62,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
         case CBCentralManagerStatePoweredOn:
             NSLog(@"CoreBluetooth BLE hardware is powered on and ready");
 //Start to scan peripheral
-            [self.centralManager scanForPeripheralsWithServices:@[ [CBUUID UUIDWithString:kServiceUUID] ] options:@{CBCentralManagerScanOptionAllowDuplicatesKey : @YES }];
+            [self.centralManager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:kServiceUUID]] options:@{CBCentralManagerScanOptionAllowDuplicatesKey : @YES }];
             break;
         case CBCentralManagerStateResetting:
             NSLog(@"CoreBluetooth BLE hardware is resetting");
@@ -137,7 +137,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
             if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:kCharacteristicUUID]]) {
                 NSLog(@"Characteristic found with UUID: %@", characteristic.UUID);
 //                Subscribe to the characteristic
-//                [peripheral setNotifyValue:YES forCharacteristic:characteristic];
+                [peripheral setNotifyValue:YES forCharacteristic:characteristic];
 //                Read characteristic's value manually
 //                [peripheral readValueForCharacteristic:characteristic];
 //                Write to characteristic's value manually
@@ -149,18 +149,21 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
 
 //When the characteristic's value of a peripheral changes, notify the app here
 - (void) peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
+#pragma Error: read is not permitted
     if(error) {
-        NSLog(@"Error while reading peripheral data %@", error.localizedDescription);
+        NSLog(@"Error while reading peripheral data %@", error.localizedDescription);\
+        return;
     }
     
     if (![characteristic.UUID isEqual:[CBUUID UUIDWithString:kCharacteristicUUID]]) {
         return;
     }
-    
+
+#pragma problems here. Cannot read
     NSLog(@"Updated characteristics value: %@", characteristic.value);
     if (characteristic.isNotifying) {
         NSLog(@"Notification began on %@", characteristic);
-        [peripheral readValueForCharacteristic:characteristic];
+//        [peripheral readValueForCharacteristic:characteristic];
     } else { // Notification has stopped
         // so disconnect from the peripheral
         NSLog(@"Notification stopped on %@.  Disconnecting", characteristic);
@@ -173,7 +176,11 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
     if(error) {
         NSLog(@"Error changing notification state: %@", error.localizedDescription);
     } else {
-        NSLog(@"Update notification state: %@", characteristic);
+        if (characteristic.isNotifying) {
+            NSLog(@"Notification began on %@", characteristic);
+        } else {
+            [self.centralManager cancelPeripheralConnection:peripheral];
+        }
     }
 }
 
@@ -192,6 +199,7 @@ static NSString * const kCharacteristicUUID = @"FFA28CDE-6525-4489-801C-1C060CAC
         NSLog(@"Error disconnect from peripheral: %@", error.localizedDescription);
     } else {
         NSLog(@"Successfully disconnect from the peripheral: %@", peripheral);
+        self.peripheral = nil;
     }
 }
 
